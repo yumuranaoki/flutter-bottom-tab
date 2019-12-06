@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Offstage(
             offstage: _currentIndex != 1,
-            child: B(),
+            child: BNavigator(navigatorKey: navigatorKeys['B']),
           )
         ]
       ),
@@ -120,7 +120,12 @@ class AA extends StatelessWidget {
     return Container(
       color: Colors.teal,
       child: Center(
-        child: Text('AA'),
+        child: FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('AA'),
+        ),
       ),
     );
   }
