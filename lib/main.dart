@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primaryColor: Colors.orange),
+      theme: ThemeData(primaryColor: Colors.teal),
       home: MyHomePage(),
     );
   }
@@ -22,10 +22,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
-  final _controller = PageController(
-    initialPage: 0,
-  );
-
   Map<String, GlobalKey<NavigatorState>> navigatorKeys = {
     'A': GlobalKey<NavigatorState>(),
     'B': GlobalKey<NavigatorState>(),
@@ -34,12 +30,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _controller,
+      body: Stack(
         children: <Widget>[
-          ANavigator(navigatorKeys['A']),
-          B()
-        ],
+          Offstage(
+            offstage: _currentIndex != 0,
+            child: ANavigator(navigatorKey: navigatorKeys['A']),
+          ),
+          Offstage(
+            offstage: _currentIndex != 1,
+            child: B(),
+          )
+        ]
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -57,12 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {
             _currentIndex = index;
           });
-
-          _controller.animateToPage(
-            index,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeOut
-          );
         },
       ),
     );
@@ -71,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class ANavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
-  ANavigator(this.navigatorKey);
+  ANavigator({this.navigatorKey});
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +118,7 @@ class AA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Colors.teal,
       child: Center(
         child: Text('AA'),
       ),
@@ -131,7 +126,31 @@ class AA extends StatelessWidget {
   }
 }
 
+class BNavigator extends StatelessWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
+  BNavigator({this.navigatorKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      key: navigatorKey,
+      onGenerateRoute: (RouteSettings settings) { 
+        switch (settings.name) {
+          case B.routeName:
+            return MaterialPageRoute(
+              builder: (context) => B()
+            );
+          default:
+            return null;
+        }
+      },
+    );
+  }
+}
+
 class B extends StatelessWidget {
+  static const routeName = '/';
+
   @override
   Widget build(BuildContext context) {
     return Container(
